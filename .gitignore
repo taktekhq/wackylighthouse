@@ -20,6 +20,10 @@
 
 !static/*.css
 !static/*.html
+!static/*.txt
+!static/*.xml
+!static/*.ico
+!static/*.png
 
 # !Makefile
 

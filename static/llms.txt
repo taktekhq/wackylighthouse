@@ -1,0 +1,18 @@
+# Wacky Lighthouse
+
+> Free public test pages that make Lighthouse and PageSpeed Insights return a known result on purpose: a valid report, a NO_FCP runtime error or a NO_LCP error. Use them to test code that runs Lighthouse or reads its results. MIT licensed, made by Taktek.
+
+## Test pages
+
+- [Valid Response](https://wackylighthouse.com/): a standard, valid Lighthouse report.
+- [No FCP](https://wackylighthouse.com/no-fcp.html): the page never paints, so Lighthouse stops with runtimeError NO_FCP and every category score is null.
+- [No LCP](https://wackylighthouse.com/no-lcp.html): the page paints only a small canvas square, so the largest-contentful-paint audit errors with NO_LCP and the performance score is null.
+
+## Usage
+
+- Lighthouse CLI: `npx lighthouse https://wackylighthouse.com/no-fcp.html --output=json`
+- PageSpeed Insights API: `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://wackylighthouse.com/no-fcp.html`
+
+## Source
+
+- [GitHub: taktekhq/wackylighthouse](https://github.com/taktekhq/wackylighthouse)
