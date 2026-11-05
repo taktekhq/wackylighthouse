@@ -36,3 +36,15 @@ li {
     width: auto;
   }
 }
+
+pre {
+  background-color: #f0f0f2;
+  padding: 0.75em;
+  border-radius: 0.25em;
+  overflow-x: auto;
+}
+
+p a:link,
+p a:visited {
+  text-decoration: underline;
+}

@@ -1,26 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Wacky Lighthouse</title>
+    <title>Wacky Lighthouse: test pages for Lighthouse NO_FCP and NO_LCP errors</title>
 
     <meta charset="utf-8" />
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Free public pages that make Lighthouse and PageSpeed Insights return a known result: a valid report, a NO_FCP error or a NO_LCP error. Test your Lighthouse tooling against them."
+    />
+    <link rel="canonical" href="https://wackylighthouse.com/" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Wacky Lighthouse" />
+    <meta property="og:title" content="Wacky Lighthouse: test pages for Lighthouse errors" />
+    <meta
+      property="og:description"
+      content="Public pages that make Lighthouse return a valid report, NO_FCP or NO_LCP on purpose."
+    />
+    <meta property="og:url" content="https://wackylighthouse.com/" />
+    <meta property="og:image" content="https://wackylighthouse.com/icon-192.png" />
+    <meta name="twitter:card" content="summary" />
 
     <link rel="stylesheet" href="base.css" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://wackylighthouse.com/#app",
+            "name": "Wacky Lighthouse",
+            "url": "https://wackylighthouse.com/",
+            "description": "Public test pages that make Lighthouse and PageSpeed Insights return a known result: a valid report, a NO_FCP runtime error or a NO_LCP error.",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Any",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "license": "https://github.com/taktekhq/wackylighthouse/blob/main/LICENSE",
+            "sameAs": ["https://github.com/taktekhq/wackylighthouse"],
+            "author": { "@id": "https://taktek.io/#org" }
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://taktek.io/#org",
+            "name": "Taktek",
+            "url": "https://taktek.io/"
+          }
+        ]
+      }
+    </script>
+
+    <script>
+      // Count people, not Lighthouse runs. Analytics loads only after a
+      // pointer, touch, key or scroll event, which Lighthouse and PageSpeed
+      // Insights never send, so test runs see no extra requests.
+      (function () {
+        if (navigator.webdriver) return;
+        var events = ["pointerdown", "pointermove", "keydown", "scroll", "touchstart"];
+        function load() {
+          events.forEach(function (e) { window.removeEventListener(e, load); });
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { dataLayer.push(arguments); };
+          gtag("js", new Date());
+          gtag("config", "G-YDKPFTGB7T");
+          var s = document.createElement("script");
+          s.async = true;
+          s.src = "https://www.googletagmanager.com/gtag/js?id=G-YDKPFTGB7T";
+          document.head.appendChild(s);
+        }
+        events.forEach(function (e) { window.addEventListener(e, load, { passive: true }); });
+      })();
+    </script>
   </head>
   <body>
     <div>
       <h1>Wacky Lighthouse</h1>
-      <p>This domain simulates Lighthouse responses for testing. Use freely.</p>
       <p>
-        <a href="https://github.com/nizarmah/wackylighthouse"
-          >More information...</a
-        >
+        Wacky Lighthouse is a set of public pages that make Lighthouse and
+        PageSpeed Insights return a known result on purpose. Point your tool
+        at one and you know what it should get back: a normal report, a
+        <code>NO_FCP</code> error or a <code>NO_LCP</code> error. Free, no
+        sign-up, open source.
       </p>
 
-      <br />
-
+      <h2>Test pages</h2>
       <ul class="sitemap">
         <li>
           <a href="/">Valid Response</a>
@@ -35,9 +103,67 @@
         <li>
           <a href="/no-lcp.html">No LCP</a>
           <br />
-          Returns a <code>NO_LCP</code> runtime error.
+          Returns a <code>NO_LCP</code> error.
         </li>
       </ul>
+
+      <h2>How to use it</h2>
+      <p>Run the Lighthouse CLI against a page:</p>
+      <pre><code>npx lighthouse https://wackylighthouse.com/no-fcp.html --output=json --output-path=report.json</code></pre>
+      <p>Or the PageSpeed Insights API:</p>
+      <pre><code>curl "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://wackylighthouse.com/no-fcp.html"</code></pre>
+      <p>
+        Then check that your code handles the result: a full report for
+        <code>/</code>, a failed run for <code>/no-fcp.html</code> and a
+        missing LCP for <code>/no-lcp.html</code>.
+      </p>
+
+      <h2>What the errors mean</h2>
+      <h3>NO_FCP</h3>
+      <p>
+        The page never paints anything, so there is no First Contentful
+        Paint. Lighthouse stops the run and puts the error in
+        <code>runtimeError</code>: "The page did not paint any content. Please
+        ensure you keep the browser window in the foreground during the load
+        and try again. (NO_FCP)". Every category score is <code>null</code>.
+        Real sites hit it when the page stays blank, for example a client-side
+        app that fails to render or a page hidden until a script runs.
+      </p>
+      <h3>NO_LCP</h3>
+      <p>
+        The page paints, but nothing it paints counts as a Largest Contentful
+        Paint. The test page draws only a small square on a
+        <code>&lt;canvas&gt;</code>. In Lighthouse 12 the run finishes, the
+        <code>largest-contentful-paint</code> audit carries the error
+        <code>NO_LCP</code>, and the performance score is <code>null</code>
+        while the other categories still score.
+      </p>
+
+      <h2>Questions</h2>
+      <h3>Why would I want Lighthouse to fail?</h3>
+      <p>
+        To test the code around it. Monitoring jobs, CI checks, SEO tools and
+        dashboards that run Lighthouse need to handle failed runs without
+        crashing or reporting a score of zero. These pages give you those
+        failures on demand.
+      </p>
+      <h3>Can I use it in CI?</h3>
+      <p>
+        Yes. The pages are static and public, so any CI job can call them.
+        For offline tests, run the same pages locally with the Go server in
+        the repository.
+      </p>
+      <h3>Is it free?</h3>
+      <p>
+        Yes. The code is MIT licensed on
+        <a href="https://github.com/taktekhq/wackylighthouse">GitHub</a>.
+        Pull requests that add new error pages are welcome.
+      </p>
+
+      <p>
+        Made by <a href="https://taktek.io/">Taktek</a>.
+        Source on <a href="https://github.com/taktekhq/wackylighthouse">GitHub</a>.
+      </p>
     </div>
   </body>
 </html>
